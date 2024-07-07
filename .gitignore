@@ -1,0 +1,12 @@
+# Node modules
+node_modules/
+
+# Build directories
+build/
+dist/
+
+# Environment variables
+.env
+
+# Cloudflare Workers Wrangler config
+wrangler.toml
