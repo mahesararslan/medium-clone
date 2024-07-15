@@ -102,21 +102,16 @@ export const useBlogs = () => {
 
     useEffect(()=>{
         
-        if(blogs.length == 0) {
-            axios.get(`${BACKEND_URL}/api/v1/blog/bulk`, {
-                headers: {
-                    Authorization: "Bearer " + localStorage.getItem("token")
-                }
+        axios.get(`${BACKEND_URL}/api/v1/blog/bulk`, {
+            headers: {
+                Authorization: "Bearer " + localStorage.getItem("token")
+            }
+        })
+            .then((response) => {
+                console.log(response.data.blogs)
+                setBlogs(response.data.blogs)
+                setLoading(false);
             })
-                .then((response) => {
-                    console.log(response.data.blogs)
-                    setBlogs(response.data.blogs)
-                    setLoading(false);
-                })
-        }
-        else {
-            setLoading(false);
-        }
 
     }, [blogs, setBlogs]);
 
@@ -133,21 +128,16 @@ export const useMyblogs = () => {
 
     useEffect(()=>{
         
-        if(blogs.length == 0) {
-            axios.get(`${BACKEND_URL}/api/v1/blog/get-blogs`, {
-                headers: {
-                    Authorization: "Bearer " + localStorage.getItem("token")
-                }
+        axios.get(`${BACKEND_URL}/api/v1/blog/get-blogs`, {
+            headers: {
+                Authorization: "Bearer " + localStorage.getItem("token")
+            }
+        })
+            .then((response) => {
+                console.log(response.data.blogs)
+                setBlogs(response.data.blogs)
+                setLoading(false);
             })
-                .then((response) => {
-                    console.log(response.data.blogs)
-                    setBlogs(response.data.blogs)
-                    setLoading(false);
-                })
-        }
-        else {
-            setLoading(false);
-        }
 
     }, [blogs, setBlogs]);
 
