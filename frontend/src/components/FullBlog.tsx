@@ -10,7 +10,7 @@ export const FullBlog = ({ blog } : {blog: BlogType } ) => {
                     {blog.title}
                 </div>
                 <div className="text-slate-500 pt-2">
-                    post on 2nd December 2023
+                    post on 2nd July 2024
                 </div>
                 <div className="pt-4">
                     {blog.content}
@@ -29,7 +29,7 @@ export const FullBlog = ({ blog } : {blog: BlogType } ) => {
                             {blog.author.name || "Anonymous"}
                         </div>
                         <div className="pt-2 text-slate-500">
-                            Random catchphrase about the authors ability to grab the users attention
+                            Turning every post into a must-read, one captivating line at a time.
                         </div>
                     </div>
                 </div>

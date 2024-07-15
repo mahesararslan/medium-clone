@@ -118,6 +118,28 @@ blogRouter.get('/bulk', async (c) => {
         blogs,
     })
 })
+
+
+blogRouter.get("/get-blogs", async (c) => {
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env.DATABASE_URL,
+  }).$extends(withAccelerate());
+
+  // @ts-ignore
+  const id = c.get('userId').toString();
+
+  const blogs = await prisma.post.findMany({
+    where: {
+      authorId: id
+    }
+  });
+
+  return c.json({
+    blogs
+  })
+
+});
+
   
 // in a get request, you should use query params to pass the id[Dynamic Parameter]
 blogRouter.get('/:id', async (c) => {
@@ -148,6 +170,8 @@ blogRouter.get('/:id', async (c) => {
     })
 
 })
+
+
   
 blogRouter.onError((err, c) => {
     console.error(err)

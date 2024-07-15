@@ -1,8 +1,9 @@
 import { Hono } from "hono"
 import { PrismaClient } from '@prisma/client/edge';
 import { withAccelerate } from '@prisma/extension-accelerate';
-import { sign } from 'hono/jwt';
+import { sign, verify } from 'hono/jwt';
 import { signupInput, signinInput } from "@mahesararslan/medium-app-common";
+import z from "zod";
 
 export const userRouter = new Hono<{
   Bindings: {
@@ -92,6 +93,121 @@ userRouter.post('/signin', async (c) => {
   const token = await sign({ id: user.id }, c.env.JWT_SECRET); 
   // @ts-ignore
   return c.json({ jwt: token });
+});
+
+async function AuthMiddleware (c: any, next: any) {
+  const header = c.req.header('authorization') || "";
+  const token = header.split(' ')[1];
+
+  try {
+    const response = await verify(token, c.env.JWT_SECRET);
+    if (response.id) {
+      c.set('userId', response.id.toString()); // Ensure userId is set as a string
+      await next();
+    } else {
+      c.status(403);
+      return c.json({ error: "You are not logged in" });
+    }
+  } catch (err) {
+    c.status(403);
+    return c.json({ // @ts-ignore
+      error: "You are not logged in",
+    });
+  }
+};
+
+userRouter.get("/get-user", AuthMiddleware, async (c) => {
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env.DATABASE_URL,
+  }).$extends(withAccelerate());
+
+  // @ts-ignore
+  const id = c.get('userId').toString();
+
+  const user = await prisma.user.findUnique({
+    where: {
+      id: id
+    }
+  });
+
+  return c.json({
+    user
+  })
+
+});
+
+const updateInput = z.object({
+  password: z.string().min(6).optional(),
+  name: z.string().optional()
+})
+
+userRouter.put("/update-user", AuthMiddleware, async (c) => {
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env.DATABASE_URL,
+  }).$extends(withAccelerate());
+
+  // @ts-ignore
+  const id = c.get('userId').toString();
+  const body = await c.req.json();
+  const { success } = updateInput.safeParse(body);
+
+  if(!success) {
+    c.status(411);
+    return c.json({
+      msg: "Invalid inputs"
+    })
+  }
+
+  if(body.name & body.password) {
+    const hashedPassword = await hashPassword(body.password);
+    const user = await prisma.user.update({
+      data: {
+        name: body.name,
+        password: hashedPassword
+      },
+      where: {
+        id: id
+      }
+    });
+  
+    return c.json({
+      user
+    })
+  }
+  else if(body.name) {
+    const user = await prisma.user.update({
+      data: {
+        name: body.name,
+      },
+      where: {
+        id: id
+      }
+    });
+  
+    return c.json({
+      user
+    })
+  }
+  else if(body.password) {
+    const hashedPassword = await hashPassword(body.password);
+    const user = await prisma.user.update({
+      data: {
+        password: hashedPassword,
+      },
+      where: {
+        id: id
+      }
+    });
+  
+    return c.json({
+      user
+    })
+  }
+
+  return c.json({
+    msg: "Nothing to Update"
+  })
+
 });
 
 userRouter.onError((err, c) => {
