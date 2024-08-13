@@ -2,8 +2,6 @@ import { BlogCard } from "../components/BlogCard";
 import { Appbar } from "../components/Appbar";
 import { useBlogs } from "../hooks/index";
 import { BlogSkeleton } from "../components/BlogSkeleton";
-import { SearchedBlogs } from "../store/atoms";
-import { useRecoilValue } from "recoil";
 
 
 export function Blogs () {

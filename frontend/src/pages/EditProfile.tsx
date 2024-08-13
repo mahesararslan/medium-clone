@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { Appbar } from "../components/Appbar"
 import { LabelledInput } from "../components/LabelledInput";
-import { Sidebar } from "../components/Sidebar"
+
 import { useUser } from "../hooks";
 import axios from "axios";
 import { BACKEND_URL } from "../config";
+import { Sidebar } from "../components/Sidebar";
 
 export const EditProfile = () => {
     const {loading, user} : { loading: any, user: any} = useUser();

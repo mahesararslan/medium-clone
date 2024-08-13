@@ -2,7 +2,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { Avatar } from "./BlogCard";
 import { useName } from "../hooks";
 import { AppbarSkeleton } from "./AppbarSkeleton";
-import { useState } from "react";
 import { useSetRecoilState } from "recoil";
 import { searchAtom } from "../store/atoms";
 

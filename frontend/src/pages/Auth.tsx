@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { BACKEND_URL } from "../config";
 
-export function Authentication() {
+export function Auth() {
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -32,5 +32,7 @@ export function Authentication() {
         });
     }, []);
 
-    return <div></div>;
+    return <div>
+        
+    </div>;
 }

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { BACKEND_URL } from "../config"
-import { useRecoilState, useSetRecoilState } from "recoil";
+import { useRecoilState } from "recoil";
 import { blogAtom, blogsAtom, nameAtom, userAtom } from "../store/atoms";
 
 export interface BlogType {
@@ -146,3 +146,4 @@ export const useMyblogs = () => {
         blogs
     }
 }   
+

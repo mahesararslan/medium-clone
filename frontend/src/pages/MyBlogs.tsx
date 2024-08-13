@@ -1,7 +1,7 @@
 import { Appbar } from "../components/Appbar"
 import { BlogCard } from "../components/BlogCard";
 import { MyBlogsSkeleton } from "../components/MyBlogsSkeleton";
-import { Sidebar } from "../components/Sidebar"
+import { Sidebar } from "../components/Sidebar.tsx"
 import { useMyblogs, useUser } from "../hooks";
 
 export const MyBlogs = () => {

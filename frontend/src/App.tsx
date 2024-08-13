@@ -5,11 +5,11 @@
  import { Blogs } from "./pages/Blogs"
 import { Publish } from "./pages/publish"
 import { Profile } from "./pages/Profile"
-import { Authentication } from "./pages/Authentication"
 import { MyBlogs } from "./pages/MyBlogs"
 import { EditProfile } from "./pages/EditProfile"
 import { RecoilRoot } from "recoil"
 import { SearchBlogs } from "./pages/SearchBlogs"
+import { Auth } from "./pages/Auth"
 
 function App() {
 
@@ -18,7 +18,7 @@ function App() {
       <RecoilRoot>
         <BrowserRouter>
           <Routes>
-              <Route path="/" element={<Authentication />} />
+              <Route path="/" element={<Auth />} />
               <Route path="/signup" element={<Signup />} />
               <Route path="/signin" element={<Signin />} />
               <Route path="/blog/:id" element={<Blog />} />
