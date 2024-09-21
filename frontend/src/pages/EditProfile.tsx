@@ -6,6 +6,7 @@ import { useUser } from "../hooks";
 import axios from "axios";
 import { BACKEND_URL } from "../config";
 import { Sidebar } from "../components/Sidebar";
+import OpenSidebar from "../components/ResponsiveSidebar";
 
 export const EditProfile = () => {
     const {loading, user} : { loading: any, user: any} = useUser();
@@ -76,7 +77,10 @@ export const EditProfile = () => {
             <div  className="ml-5 relative cursor-pointer inline-flex items-center justify-center overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600 h-12 w-12">
                 <span className="text-2xl font-semibold text-gray-600 dark:text-gray-300">{user.name[0].toUpperCase()}</span>
             </div>
-            <div>
+            <div className="md:hidden">
+              <OpenSidebar />
+            </div>
+            <div className="hidden md:block">
               <Sidebar />
             </div>
           </div>

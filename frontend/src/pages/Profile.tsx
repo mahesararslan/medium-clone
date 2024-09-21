@@ -2,6 +2,7 @@ import { useUser } from "../hooks";
 import { Appbar } from "../components/Appbar";
 import { Sidebar } from "../components/Sidebar";
 import { ProfileSkeleton } from "../components/ProfileSkeleton";
+import OpenSidebar from "../components/ResponsiveSidebar";
 
 
 
@@ -17,11 +18,14 @@ export const Profile = () => {
     return <div>
       <Appbar />
       <div className="grid grid-cols-12">
-          <div className="col-span-4 flex flex-col mx-2 my-5">
+          <div className="col-span-2 md:col-span-4 flex flex-col mx-2 my-5">
             <div  className="ml-5 relative cursor-pointer inline-flex items-center justify-center overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600 h-12 w-12">
                 <span className="text-2xl font-semibold text-gray-600 dark:text-gray-300">{user.name[0].toUpperCase()}</span>
             </div>
-            <div>
+            <div className="md:hidden">
+              <OpenSidebar />
+            </div>
+            <div className="hidden md:block">
               <Sidebar />
             </div>
           </div>

@@ -29,7 +29,7 @@ export function Blogs () {
     return <div>
         <Appbar />
         <div className="flex justify-center">
-            <div>
+            <div className="mx-5 md:mx-0">
                 {blogs.map((blog: any) => (
                 <BlogCard
                 id={blog.id} // Ensure each blog has a unique identifier

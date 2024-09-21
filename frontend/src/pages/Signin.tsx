@@ -9,7 +9,7 @@ export function Signin () {
             <div>
                 <AuthSignin />
             </div>
-            <div className="hidden lg:block" >
+            <div className="lg:block" >
                 <Quote />
             </div>
         </div>

@@ -1,6 +1,7 @@
 import { Appbar } from "../components/Appbar"
 import { BlogCard } from "../components/BlogCard";
 import { MyBlogsSkeleton } from "../components/MyBlogsSkeleton";
+import OpenSidebar from "../components/ResponsiveSidebar.tsx";
 import { Sidebar } from "../components/Sidebar.tsx"
 import { useMyblogs, useUser } from "../hooks";
 
@@ -22,7 +23,10 @@ export const MyBlogs = () => {
             <div  className="ml-5 relative cursor-pointer inline-flex items-center justify-center overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600 h-12 w-12">
                 <span className="text-2xl font-semibold text-gray-600 dark:text-gray-300">{user.name[0].toUpperCase()}</span>
             </div>
-            <div>
+            <div className=" md:hidden">
+              <OpenSidebar />
+            </div>
+            <div className="hidden md:block">
               <Sidebar />
             </div>
           </div>

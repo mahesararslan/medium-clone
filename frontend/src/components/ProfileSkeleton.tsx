@@ -11,6 +11,9 @@ export const ProfileSkeleton = () => {
                 <div className="h-2 bg-gray-200 rounded-full mb-2.5"></div>
             </div>
             <div>
+              <div className="h-2 bg-gray-200 rounded-full mb-2.5"></div>
+            </div>
+            <div className="hidden md:block">
               <Sidebar />
             </div>
           </div>

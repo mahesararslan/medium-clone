@@ -9,7 +9,7 @@ export function Signup () {
             <div>
                 <AuthSignup />
             </div>
-            <div className="hidden lg:block" >
+            <div className="lg:block" >
                 <Quote />
             </div>
         </div>
