@@ -54,7 +54,7 @@ export function Appbar() {
                     New
                 </button>
             </Link>
-            <Link className="hidden md:block" to={"/profile"}> <Avatar size={"big"} name={name} /> </Link>
+            <Link className="hidden md:block" to={"/profile"}> <Avatar size={"big"} name={name || "A"} /> </Link>
             <div className="md:hidden">
                 <DropdownButton />
             </div>
