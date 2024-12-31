@@ -10,6 +10,9 @@ import { EditProfile } from "./pages/EditProfile"
 import { RecoilRoot } from "recoil"
 import { SearchBlogs } from "./pages/SearchBlogs"
 import { Auth } from "./pages/Auth"
+import LandingPage from "./pages/LandingPage"
+import AboutUs from "./pages/AboutUs"
+import PrivacyPolicy from "./pages/PrivatePolicy"
 
 function App() {
 
@@ -19,6 +22,9 @@ function App() {
         <BrowserRouter>
           <Routes>
               <Route path="/" element={<Auth />} />
+              <Route path="/home" element={<LandingPage />} />
+              <Route path="/about-us" element={<AboutUs />} />
+              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
               <Route path="/signup" element={<Signup />} />
               <Route path="/signin" element={<Signin />} />
               <Route path="/blog/:id" element={<Blog />} />

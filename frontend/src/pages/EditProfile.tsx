@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Appbar } from "../components/Appbar"
 import { LabelledInput } from "../components/LabelledInput";
 
@@ -12,6 +12,11 @@ export const EditProfile = () => {
     const {loading, user} : { loading: any, user: any} = useUser();
     const [name, setName] = useState("");
     const [password, setPassword] = useState("");
+
+    useEffect(() => {
+        alert(JSON.stringify(user)) 
+    
+    }, [user]);
 
     async function updateName() {
         
