@@ -205,7 +205,7 @@ blogRouter.post('/like', async (c) => {
           }
         })
 
-        console.log("USER: ",user);
+        
         // add notification
         await prisma.notification.create({
           data: { // @ts-ignore
@@ -256,36 +256,56 @@ blogRouter.get("/get-blogs", async (c) => {
 
 });
 
-  
-// in a get request, you should use query params to pass the id[Dynamic Parameter]
 blogRouter.get('/:id', async (c) => {
-    const prisma = new PrismaClient({
-        datasourceUrl: c.env.DATABASE_URL,
-    }).$extends(withAccelerate());
+  const prisma = new PrismaClient({
+      datasourceUrl: c.env.DATABASE_URL,
+  }).$extends(withAccelerate());
 
-    const id = c.req.param('id');
+  const postId = c.req.param('id');
+  const userId = c.get('userId').toString();
 
-    const blog = await prisma.post.findUnique({
-        where: { // @ts-ignore
-            id: id
-        },
+  const blog = await prisma.post.findFirst({
+    where: { id: postId },
+    select: {
+      id: true,
+      title: true,
+      shortDescription: true,
+      content: true,
+      createdAt: true,
+      author: {
         select: {
           id: true,
-          title: true,
-          content: true,
-          author: {
-            select: {
-              name: true
-            }
-          }
+          name: true,
+          image: true
         }
-    })
+      },
+      _count: {
+        select: {
+          likes: true,
+          comments: true
+        }
+      },
+      likes: {
+        where: {
+          userId: userId
+        },
+        select: {
+          id: true
+        }
+      }
+    }
+  });
 
-    return c.json ({
-        blog
-    })
+  const liked = blog.likes.length > 0;
 
-})
+  return c.json({
+      blog: {
+          ...blog,
+          liked
+      }
+  });
+});
+
 
 
   

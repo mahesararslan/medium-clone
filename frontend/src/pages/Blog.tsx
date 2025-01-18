@@ -1,29 +1,144 @@
-import { Appbar } from "../components/Appbar";
-import { FullBlog } from "../components/FullBlog";
-import { FullBlogSkeleton } from "../components/FullBlogSkeleton";
-import { useBlog } from "../hooks";
-import { useParams } from "react-router-dom";
+// @ts-nocheck
+import { useState } from 'react'
+import { HeartIcon, MessageCircleIcon } from 'lucide-react'
+import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar"
+import { Button } from "../components/ui/button"
+import { Textarea } from "../components/ui/textarea"
+import { useParams } from 'react-router-dom'
+import { useBlog } from '../hooks'
+import axios from 'axios'
+import { BACKEND_URL } from '../config'
 
+export function Blog() {
+  const { id } = useParams();
+  const blog = useBlog(id);
+  const [likes, setLikes] = useState(blog?._count.likes);
+  const [isLiked, setIsLiked] = useState(blog?.liked || false);
+  const [comments, setComments] = useState([]);
+  const [newComment, setNewComment] = useState('');
 
+  const handleLike = async () => {
+    if (isLiked) {
+      setLikes(prev => prev - 1)
+      setIsLiked(!isLiked)
+        const res = await axios.post(`${BACKEND_URL}/api/v1/blog/like`,{    
+            blogId: blog.id,
+            like: false,
+            authorId: blog.author.id,
+        }, {
+            headers:{
+                Authorization: "Bearer " + localStorage.getItem("token")
+            }
+        })
 
-export function Blog () {
+        if(res.status !== 200) {
+            setLikes(prev => prev + 1)
+        }
+    } else {
+      setLikes(prev => prev + 1)
+      setIsLiked(!isLiked)
+        const res = await axios.post(`${BACKEND_URL}/api/v1/blog/like`,{
+            blogId: blog.id,
+            like: true,
+            authorId: blog.author.id,
+        }, {
+            headers:{
+                Authorization: "Bearer " + localStorage.getItem("token")
+            }
+        })
 
-    
-    const { id } = useParams()
-    const {loading, blog} = useBlog({ id: id || "" });
-
-    // Add loading skeleton.
-    if(loading || !blog) {
-        return <div>
-            <Appbar />  
-            <FullBlogSkeleton />
-        </div>
+        if(res.status !== 200) {
+            setLikes(prev => prev - 1)
+        }
     }
+  }
+  const handleCommentSubmit = (e) => {
+    e.preventDefault();
+    if (newComment.trim()) {
+      const comment = {
+        id: comments.length + 1,
+        author: 'Current User',
+        content: newComment,
+        createdAt: new Date().toISOString()
+      }; // @ts-ignore
+      setComments([...comments, comment]);
+      setNewComment('');
+    }
+  };
 
-    return <div>
-         <Appbar />  
-        <FullBlog /* @ts-ignore */ 
-        blog={blog} />
-    </div> 
+  if (!blog) {
+    return <div>Loading...</div>;
+  }
 
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <article className="max-w-4xl mx-auto px-4 py-12">
+        <header className="mb-8">
+          <h1 className="text-4xl font-bold font-serif mb-4">{blog.title}</h1>
+          <div className="flex items-center gap-4">
+            <Avatar className="h-12 w-12">
+              <AvatarImage src={blog.author.image} alt={blog.author.name} />
+              <AvatarFallback>{blog.author.name[0]}</AvatarFallback>
+            </Avatar>
+            <div>
+              <p className="font-medium">{blog.author.name}</p>
+              <time className="text-sm text-gray-500">
+                {new Date(blog.createdAt).toLocaleString('default', { month: 'short', day: 'numeric' })}
+              </time>
+            </div>
+          </div>
+        </header>
+
+        <div
+          className="prose prose-lg max-w-none mb-8"
+          dangerouslySetInnerHTML={{ __html: blog.content }}
+        />
+
+        <div className="flex items-center gap-4 mb-8">
+          <Button
+            variant="ghost"
+            size="sm"
+            className={`flex items-center gap-2 ${isLiked ? 'text-red-500' : ''}`}
+            onClick={handleLike}
+          >
+            <HeartIcon className={`h-5 w-5 ${isLiked ? 'fill-red-500' : ''}`} />
+            {likes} Likes
+          </Button>
+          <Button variant="ghost" size="sm" className="flex items-center gap-2">
+            <MessageCircleIcon className="h-5 w-5" />
+            {comments.length} Comments
+          </Button>
+        </div>
+
+        <div className="border-t pt-8">
+          <h2 className="text-2xl font-bold mb-4">Comments</h2>
+          <form onSubmit={handleCommentSubmit} className="mb-8">
+            <Textarea
+              placeholder="Add a comment..."
+              value={newComment}
+              onChange={(e) => setNewComment(e.target.value)}
+              className="mb-2"
+            />
+            <Button type="submit">Post Comment</Button>
+          </form>
+          <div className="space-y-6">
+            {comments.map((comment) => (
+              <div key={comment.id} className="bg-white p-4 rounded-lg shadow">
+                <div className="flex items-center gap-2 mb-2">
+                  <Avatar className="h-8 w-8">
+                    <AvatarFallback>{comment.author[0]}</AvatarFallback>
+                  </Avatar>
+                  <span className="font-medium">{comment.author}</span>
+                  <time className="text-sm text-gray-500">
+                    {new Date(comment.createdAt).toLocaleString('default', { month: 'short', day: 'numeric' })}
+                  </time>
+                </div>
+                <p>{comment.content}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </article>
+    </div>
+  );
 }

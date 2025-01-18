@@ -73,30 +73,28 @@ export const useUser = () => {
 
 }
 
-export const useBlog = ({id} : { id:string }) => {
-    const [loading, setLoading] = useState(true);
+export const useBlog = (id: string) => {
     const [blog, setBlog] = useRecoilState(blogAtom);
 
-    useEffect(()=>{
-        if(!blog) {
-        axios.get(`${BACKEND_URL}/api/v1/blog/${id}`, {
-            headers: {
-                Authorization: "Bearer " + localStorage.getItem("token")
-            }
-        })
-            .then((response) => {
-                console.log(response.data.blog)
-                setBlog(response.data.blog)
-                setLoading(false);
+    useEffect(() => {
+        if (!blog) {
+            axios.get(`${BACKEND_URL}/api/v1/blog/${id}`, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
+                }
             })
+            .then(response => {
+                setBlog(response.data.blog);
+            })
+            .catch(error => {
+                console.error("Error fetching blog:", error);
+            });
         }
-    }, [blog, setBlog]);
+    }, [id, blog, setBlog]);
 
-    return {
-        loading,
-        blog
-    }
-}
+    console.log("SINGLE BLOG:", blog)
+    return blog;
+};
 
 export const useBlogs = () => {
     const [blogs, setBlogs] = useRecoilState(blogsAtom);

@@ -8,6 +8,23 @@
   font-family: 'Gt Sectra Display', serif;
 }
 
+@layer base {
+  body {
+    @apply bg-gray-50;
+  }
+}
+
+@layer components {
+  .prose {
+    @apply max-w-none;
+  }
+  .prose h2 {
+    @apply text-2xl font-bold mt-8 mb-4;
+  }
+  .prose p {
+    @apply mb-4;
+  }
+}
 
 /* 
 @layer base {
