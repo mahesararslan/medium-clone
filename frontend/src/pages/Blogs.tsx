@@ -1,6 +1,5 @@
 import { useBlogs } from "../hooks/index";
-import { BlogSkeleton } from "../components/BlogSkeleton";
-import { BlogCard } from "../components/BlogCard";
+import { BlogSkeleton, BlogCard } from "../components/BlogCard";
 import { useEffect, useState } from "react";
 
 

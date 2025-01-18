@@ -114,6 +114,7 @@ blogRouter.get('/bulk', async (c) => {
       createdAt: true,
       author: {
         select: {
+          id: true,
           name: true,
           image: true // Select avatar from the User's image field
         }
@@ -166,6 +167,17 @@ blogRouter.post('/like', async (c) => {
           postId: body.blogId,
         },
       });
+
+      // delete notification:
+      await prisma.notification.deleteMany({
+        where: { // @ts-ignore
+          authorId: body.authorId.toString() || "",
+          postId: body.blogId,
+          userId: userId,
+        }
+      })
+
+
       c.status(200)
       return c.json({
         msg: 'unliked successfully'
@@ -186,6 +198,25 @@ blogRouter.post('/like', async (c) => {
             postId: body.blogId,
           },
         });
+
+        const user = await prisma.user.findFirst({
+          where:{
+            id: userId
+          }
+        })
+
+        console.log("USER: ",user);
+        // add notification
+        await prisma.notification.create({
+          data: { // @ts-ignore
+            authorId: body.authorId.toString() || "",
+            postId: body.blogId,
+            userId: userId,
+            userName: user?.name || "",
+            userImage: user?.image || "",
+            message: "Liked Your Post.",
+          }
+        })
         
         c.status(200)
         return c.json({

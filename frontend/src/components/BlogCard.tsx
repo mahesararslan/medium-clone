@@ -2,9 +2,10 @@ import { useEffect, useState } from 'react'
 import { HeartIcon, MessageCircleIcon } from 'lucide-react'
 import { Button } from '../components/ui/button'
 import { Avatar as Avatarr, AvatarImage, AvatarFallback } from '../components/ui/avatar'
+import { Skeleton } from "../components/ui/skeleton"
 import axios from 'axios'
 import { BACKEND_URL } from '../config'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 interface BlogProps {
   blog: {
@@ -15,6 +16,7 @@ interface BlogProps {
     createdAt: string
     liked ?: boolean
     author: {
+      id: string  
       name: string
       image?: string
     }
@@ -27,9 +29,9 @@ interface BlogProps {
 
 export function BlogCard({ blog }: BlogProps) {
   const [likes, setLikes] = useState(blog._count.likes || 0)
-  const [comments, setComments] = useState(blog._count.comments || 0)
   const [isLiked, setIsLiked] = useState(blog.liked || false)
   const [image, setImage] = useState("")
+  const navigate = useNavigate();
 
   useEffect(() => {
           function extractFirstImageUrl(htmlString: string) {
@@ -52,9 +54,11 @@ export function BlogCard({ blog }: BlogProps) {
   const handleLike = async () => {
     if (isLiked) {
       setLikes(prev => prev - 1)
+      setIsLiked(!isLiked)
         const res = await axios.post(`${BACKEND_URL}/api/v1/blog/like`,{    
             blogId: blog.id,
-            like: false
+            like: false,
+            authorId: blog.author.id,
         }, {
             headers:{
                 Authorization: "Bearer " + localStorage.getItem("token")
@@ -66,10 +70,11 @@ export function BlogCard({ blog }: BlogProps) {
         }
     } else {
       setLikes(prev => prev + 1)
-
+      setIsLiked(!isLiked)
         const res = await axios.post(`${BACKEND_URL}/api/v1/blog/like`,{
             blogId: blog.id,
-            like: true
+            like: true,
+            authorId: blog.author.id,
         }, {
             headers:{
                 Authorization: "Bearer " + localStorage.getItem("token")
@@ -80,7 +85,6 @@ export function BlogCard({ blog }: BlogProps) {
             setLikes(prev => prev - 1)
         }
     }
-    setIsLiked(!isLiked)
   }
 
   return (
@@ -129,10 +133,12 @@ export function BlogCard({ blog }: BlogProps) {
                 <span className="text-sm text-gray-500">{likes}</span>
               </div>
               <div className="flex items-center gap-1">
-                <Button variant="ghost" size="icon">
+                <Button variant="ghost" size="icon"
+                    onClick={() => {navigate(`/blog/${blog.id}`)}}
+                >
                   <MessageCircleIcon className="h-5 w-5" />
                 </Button>
-                <span className="text-sm text-gray-500">{comments}</span>
+                <span className="text-sm text-gray-500">{blog._count.comments || 0}</span>
               </div>
             </div>
           </div>
@@ -150,6 +156,46 @@ export function BlogCard({ blog }: BlogProps) {
     </article>
   )
 }
+
+export function BlogSkeleton() {
+  return (
+    <article className="py-8 px-4 bg-gray-50 rounded-lg transition-all duration-300 w-screen">
+      <div className="container mx-auto px-4">
+        <div className="flex flex-col lg:flex-row gap-8">
+          <div className="flex-1 space-y-4 order-2 lg:order-1">
+            {/* Author Info Skeleton */}
+            <div className="flex items-center gap-3">
+              <Skeleton className="h-8 w-8 rounded-full" />
+              <Skeleton className="h-4 w-24" />
+              <Skeleton className="h-4 w-16" />
+            </div>
+
+            {/* Content Skeleton */}
+            <div className="space-y-2">
+              <Skeleton className="h-6 w-3/4" />
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-2/3" />
+            </div>
+
+            {/* Engagement Skeleton */}
+            <div className="flex items-center gap-4 pt-4 order-3 lg:order-4">
+              <Skeleton className="h-8 w-16" />
+              <Skeleton className="h-8 w-16" />
+            </div>
+          </div>
+
+          {/* Blog Image Skeleton */}
+          <div className="lg:w-1/3 order-1 lg:order-2">
+            <Skeleton className="w-full aspect-[4/3] rounded-lg" />
+          </div>
+        </div>
+      </div>
+    </article>
+  )
+}
+
+
 
 
 export function Avatar({ name,size="small" } : { name: string, size?:"big" | "small" }) {

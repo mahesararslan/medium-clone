@@ -8,8 +8,6 @@ import 'reactjs-tiptap-editor/style.css';
 const handleImageUpload = async (file: any) => {
   const formData = new FormData();
   formData.append('file', file);
-  alert("Uploading")
-  console.log(formData)
   try {
     const response = await fetch(`http://localhost:3000/upload`, { // Replace with your image upload API
       method: 'POST',
