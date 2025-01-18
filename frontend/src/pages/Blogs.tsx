@@ -1,12 +1,20 @@
 import { useBlogs } from "../hooks/index";
 import { BlogSkeleton } from "../components/BlogSkeleton";
 import { BlogCard } from "../components/BlogCard";
+import { useEffect, useState } from "react";
 
 
 export function Blogs () {
 
     // @ts-ignore
-    const {loading, blogs} = useBlogs();
+    const blogs = useBlogs();
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        if(blogs.length > 0) {
+            setLoading(false);
+        }
+    }, [blogs])
 
     // Add loading skeleton.
     if(loading) {
@@ -26,7 +34,7 @@ export function Blogs () {
         <div className="min-h-screen bg-white">
           <div className="max-w-screen-xl mx-auto">
             <header className="py-8 px-4">
-              <h1 className="text-3xl font-serif">Your Stories</h1>
+              <h1 className="text-3xl font-serif text-center bg-black text-white py-3">Blogs for you</h1>
             </header>
             <div className="divide-y divide-gray-200">
               {blogs.map(blog => (

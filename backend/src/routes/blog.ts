@@ -97,38 +97,112 @@ blogRouter.put('/', async (c) => {
     });
 })
 
-blogRouter.get('/bulk', async (c) => {
-    const prisma = new PrismaClient({
-        datasourceUrl: c.env.DATABASE_URL,
-    }).$extends(withAccelerate());
 
-    const blogs = await prisma.post.findMany({
-      select: {
-        id: true,
-        title: true,
-        shortDescription: true,
-        content: true,// Assuming this is in the Post table or you want to select from User table's avatar/image.
-        createdAt: true,
-        author: {
-          select: {
-            name: true,
-            image: true // Select avatar from the User's image field
-          }
+blogRouter.get('/bulk', async (c) => {
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env.DATABASE_URL,
+  }).$extends(withAccelerate());
+
+  const userId = c.get('userId').toString(); // Assuming you are passing userId in headers or somewhere accessible
+
+  const blogs = await prisma.post.findMany({
+    select: {
+      id: true,
+      title: true,
+      shortDescription: true,
+      content: true,
+      createdAt: true,
+      author: {
+        select: {
+          name: true,
+          image: true // Select avatar from the User's image field
+        }
+      },
+      _count: {
+        select: {
+          likes: true,    // Count of likes on the post
+          comments: true  // Count of comments on the post
+        }
+      },
+      likes: {
+        where: {
+          userId: userId // Filter likes by current user
         },
-        _count: {
-          select: {
-            likes: true,    // Count of likes on the post
-            comments: true  // Count of comments on the post
-          }
+        select: {
+          id: true // Just to check existence
         }
       }
-    });
-    // returns all blogs
+    }
+  });
 
-    return c.json({
-        blogs,
-    })
-})
+  // Add 'liked' field based on whether the user has liked the post
+  const enhancedBlogs = blogs.map(blog => ({
+    ...blog,
+    liked: blog.likes.length > 0 // Check if there's any like entry for the current user
+  }));
+
+  return c.json({
+    blogs: enhancedBlogs,
+  });
+});
+
+
+// like a blog
+blogRouter.post('/like', async (c) => {
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env.DATABASE_URL,
+  }).$extends(withAccelerate());
+
+  const body = await c.req.json();
+  console.log(body);
+  const userId = c.get('userId').toString();
+  console.log(userId);
+  try {
+    if (body.like === false) {
+      // Handle unlike
+      await prisma.like.deleteMany({
+        where: {
+          userId: userId,
+          postId: body.blogId,
+        },
+      });
+      c.status(200)
+      return c.json({
+        msg: 'unliked successfully'
+      })
+    } else {
+      // Handle like
+      const existingLike = await prisma.like.findFirst({
+        where: {
+          userId: userId,
+          postId: body.blogId,
+        },
+      });
+
+      if (!existingLike) {
+        await prisma.like.create({
+          data: {
+            userId: userId,
+            postId: body.blogId,
+          },
+        });
+        
+        c.status(200)
+        return c.json({
+          msg: 'liked successfully'
+        })
+      } else {
+        c.status(200)
+        return c.json({
+          msg: 'liked successfully'
+        })
+      }
+    }
+  } catch (error) {
+    console.error(error);
+    return c.status(500);
+  }
+});
 
 
 blogRouter.get("/get-blogs", async (c) => {

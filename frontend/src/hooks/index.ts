@@ -78,6 +78,7 @@ export const useBlog = ({id} : { id:string }) => {
     const [blog, setBlog] = useRecoilState(blogAtom);
 
     useEffect(()=>{
+        if(!blog) {
         axios.get(`${BACKEND_URL}/api/v1/blog/${id}`, {
             headers: {
                 Authorization: "Bearer " + localStorage.getItem("token")
@@ -88,7 +89,7 @@ export const useBlog = ({id} : { id:string }) => {
                 setBlog(response.data.blog)
                 setLoading(false);
             })
-
+        }
     }, [blog, setBlog]);
 
     return {
@@ -98,12 +99,10 @@ export const useBlog = ({id} : { id:string }) => {
 }
 
 export const useBlogs = () => {
-
-    const [loading, setLoading] = useState(true);
     const [blogs, setBlogs] = useRecoilState(blogsAtom);
 
     useEffect(()=>{
-        if(!blogs.length) {
+        if(!blogs.length || blogs.length === 0) {
             axios.get(`${BACKEND_URL}/api/v1/blog/bulk`, {
                 headers: {
                     Authorization: "Bearer " + localStorage.getItem("token")
@@ -112,15 +111,11 @@ export const useBlogs = () => {
                 .then((response) => {
                     console.log(response.data.blogs)
                     setBlogs(response.data.blogs)
-                    setLoading(false);
                 })
         }
     }, [blogs, setBlogs]);
 
-    return {
-        loading,
-        blogs
-    }
+    return blogs;
 }   
 
 export const useMyblogs = () => {
