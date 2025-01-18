@@ -1,7 +1,6 @@
-import { BlogCard } from "../components/BlogCard";
-import { Appbar } from "../components/Appbar";
 import { useBlogs } from "../hooks/index";
 import { BlogSkeleton } from "../components/BlogSkeleton";
+import { BlogCard } from "../components/BlogCard";
 
 
 export function Blogs () {
@@ -11,9 +10,7 @@ export function Blogs () {
 
     // Add loading skeleton.
     if(loading) {
-        return <div>
-            <Appbar />
-            <div className="flex justify-center">
+        return <div className="flex justify-center">
                 <div>
                     <BlogSkeleton />
                     <BlogSkeleton />
@@ -23,24 +20,22 @@ export function Blogs () {
                     <BlogSkeleton />    
                 </div>    
             </div>
-        </div>
     }
 
-    return <div>
-        <Appbar />
-        <div className="flex justify-center">
-            <div className="mx-5 md:mx-0">
-                {blogs.map((blog: any) => (
-                <BlogCard
-                id={blog.id} // Ensure each blog has a unique identifier
-                authorName={blog.author.name || "Anonymous"}
-                title={blog.title}
-                content={blog.content}
-                publishedDate="4 July 2024"
-                />
-                ))}
+    return (
+        <div className="min-h-screen bg-white">
+          <div className="max-w-screen-xl mx-auto">
+            <header className="py-8 px-4">
+              <h1 className="text-3xl font-serif">Your Stories</h1>
+            </header>
+            <div className="divide-y divide-gray-200">
+              {blogs.map(blog => (
+                // @ts-ignore
+                <BlogCard key={blog.id} blog={blog} />
+              ))}
             </div>
+          </div>
         </div>
-    </div> 
+      )
 
 }

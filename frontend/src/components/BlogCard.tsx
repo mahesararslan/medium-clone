@@ -1,41 +1,127 @@
-import { Link } from "react-router-dom"
+import { useEffect, useState } from 'react'
+import { HeartIcon, MessageCircleIcon } from 'lucide-react'
+import { Button } from '../components/ui/button'
+import { Avatar as Avatarr, AvatarImage, AvatarFallback } from '../components/ui/avatar'
 
-interface BlogCardInterface {
-    authorName: string,
-    title: string,
-    content: string,
-    publishedDate: string
+interface BlogProps {
+  blog: {
     id: string
+    title: string
+    shortDescription: string
+    content: string
+    createdAt: string
+    author: {
+      name: string
+      image?: string
+    }
+    likes: number
+    comments: number
+  }
 }
 
+export function BlogCard({ blog }: BlogProps) {
+  const [likes, setLikes] = useState(blog.likes || 0)
+  const [comments, setComments] = useState(blog.comments || 0)
+  const [isLiked, setIsLiked] = useState(false)
+  const [image, setImage] = useState("")
 
-export function BlogCard ({authorName, title, content, publishedDate, id} : BlogCardInterface) {
+  useEffect(() => {
+    
+        
+          function extractFirstImageUrl(htmlString: string) {
+              // Create a temporary DOM element
+              const tempDiv = document.createElement('div');
+              tempDiv.innerHTML = htmlString;
+            
+              // Find the first image tag
+              const imgTag = tempDiv.querySelector('img');
+            
+              // Return the src attribute of the image
+              return imgTag ? imgTag.src : null;
+            }
+            
+            const firstImageUrl = extractFirstImageUrl(blog.content);
+            setImage(firstImageUrl || "placeholder.svg");
+            
+      }, [blog.content])
 
-    return <Link to={`/blog/${id}`} >
-        <div className="p-4 border-b border-slate-200 pb-4 w-screen max-w-screen-md cursor-pointer">
-            <div className="flex"> 
-                <div className="flex">
-                    <Avatar name={authorName} />
-                </div>
-                <div className="flex justify-center flex-col font-extralight pl-2 text-md" > {authorName} </div>
-                <div className="flex justify-center flex-col pl-2"> <Circle/> </div>
-                <div className="flex justify-center flex-col font-thin pl-2 text-slate-500 text-sm" >{publishedDate}</div>
-            </div>
-            <div className="text-xl font-semibold pt-2">
-                {title}
-            </div>
-            <div className="text-md font-light">
-                {content.length > 100 ? content.slice(0,100) + "...." : content}
-            </div>
-            <div className="text-slate-400 text-sm font-thin pt-4">
-                {`${Math.ceil(content.length / 100)} minute(s) read`}
-            </div>
-            <div>
+  const handleLike = () => {
+    if (isLiked) {
+      setLikes(prev => prev - 1)
+    } else {
+      setLikes(prev => prev + 1)
+    }
+    setIsLiked(!isLiked)
+  }
 
+  return (
+    <article className="py-8 border-b last:border-b-0 bg-gray-100 border-2 border-gray-100 p-10 rounded-xl cursor-pointer hover:bg-gray-200 m-5">
+      <div className="container mx-auto px-4">
+        <div className="flex flex-col md:flex-row gap-8">
+          <div className="flex-1 space-y-4">
+            {/* Author Info */}
+            <div className="flex items-center gap-3">
+              <Avatarr className="h-8 w-8">
+                <AvatarImage src={blog.author.image} alt={blog.author.name} />
+                <AvatarFallback className="bg-gray-200 text-gray-700">
+                  {blog.author.name[0].toUpperCase()}
+                </AvatarFallback>
+              </Avatarr>
+              <span className="font-medium">{blog.author.name}</span>
+              <span className="text-gray-500">·</span>
+              <time className="text-gray-500">
+                {new Date(blog.createdAt).toLocaleString('default', { month: 'short', day: 'numeric' })}
+              </time>
             </div>
+
+            {/* Content */}
+            <div className="space-y-2">
+              <h2 className="text-xl font-bold font-serif hover:underline cursor-pointer">
+                {blog.title}
+              </h2>
+              <p className="text-gray-600 line-clamp-3">
+                {blog.shortDescription}
+              </p>
+            </div>
+
+            {/* Engagement */}
+            <div className="flex items-center gap-4 pt-4">
+              <div className="flex items-center gap-1">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="hover:text-red-500"
+                  onClick={handleLike}
+                >
+                  <HeartIcon
+                    className={`h-5 w-5 ${isLiked ? 'fill-red-500 text-red-500' : ''}`}
+                  />
+                </Button>
+                <span className="text-sm text-gray-500">{likes}</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <Button variant="ghost" size="icon">
+                  <MessageCircleIcon className="h-5 w-5" />
+                </Button>
+                <span className="text-sm text-gray-500">{comments}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Blog Image */}
+          <div className="md:w-1/3 flex justify-center items-center">
+            <img
+              src={image || "/placeholder.svg"}
+              alt={blog.title}
+              className="w-full h-[1/3] object-cover rounded-lg"
+            />
+          </div>
         </div>
-    </Link> 
+      </div>
+    </article>
+  )
 }
+
 
 export function Avatar({ name,size="small" } : { name: string, size?:"big" | "small" }) {
 
@@ -51,3 +137,4 @@ export function Circle() {
         
     </div>
 }
+

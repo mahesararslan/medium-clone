@@ -56,6 +56,7 @@ blogRouter.post('/', async (c) => {
   const post = await prisma.post.create({
     data: {
       title: body.title,
+      shortDescription: body.description,
       content: body.content, // @ts-ignore
       authorId: authorId,
     },
@@ -103,16 +104,26 @@ blogRouter.get('/bulk', async (c) => {
 
     const blogs = await prisma.post.findMany({
       select: {
-        title: true,
-        content: true,
         id: true,
+        title: true,
+        shortDescription: true,
+        content: true,// Assuming this is in the Post table or you want to select from User table's avatar/image.
+        createdAt: true,
         author: {
           select: {
-            name: true
+            name: true,
+            image: true // Select avatar from the User's image field
+          }
+        },
+        _count: {
+          select: {
+            likes: true,    // Count of likes on the post
+            comments: true  // Count of comments on the post
           }
         }
       }
-    }); // returns all blogs
+    });
+    // returns all blogs
 
     return c.json({
         blogs,

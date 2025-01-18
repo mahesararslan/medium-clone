@@ -4,6 +4,7 @@ import { withAccelerate } from '@prisma/extension-accelerate';
 import { sign, verify } from 'hono/jwt';
 import { signupInput, signinInput } from "@mahesararslan/medium-app-common";
 import z from "zod";
+import { use } from "hono/jsx";
 
 export const userRouter = new Hono<{
   Bindings: {
@@ -27,6 +28,43 @@ async function verifyPassword(password: string, hash: string): Promise<boolean> 
   return hashedPassword === hash;
 }
 
+// google-signin route:
+userRouter.post('/google-signin', async (c) => {
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env.DATABASE_URL,
+  }).$extends(withAccelerate());
+
+  const { name, email, picture } = await c.req.json();  
+
+  const user = await prisma.user.findFirst({
+    where: {
+      email: email
+    }
+  });
+
+
+  // set header for cross origin
+  c.header('Cross-Origin-Opener-Policy', 'unsafe-none');
+  c.header('Access-Control-Allow-Origin', 'http://localhost:5173');
+  
+
+  if (!user) {
+    const newUser = await prisma.user.create({
+      data: {
+        email: email,
+        name: name,
+        image: picture
+      }
+    });
+
+    const token = await sign({ id: newUser.id }, c.env.JWT_SECRET);
+    return c.json({ jwt: token });
+  }
+
+  const token = await sign({ id: user.id }, c.env.JWT_SECRET);
+  return c.json({ jwt: token });
+});
+
 userRouter.post('/signup', async (c) => {
   const prisma = new PrismaClient({
     datasourceUrl: c.env.DATABASE_URL,
@@ -46,6 +84,7 @@ userRouter.post('/signup', async (c) => {
 
   const user = await prisma.user.create({
     data: { 
+      name: body.name,
       email: body.email,
       password: hashedPassword,
     }
@@ -80,7 +119,16 @@ userRouter.post('/signin', async (c) => {
       error: 'User not found',
     });
   }
+  
+  // if user was a google account.
+  if(user.password === null) {
+    c.status(403);
+    return c.json({
+      error: 'User not found',
+    });
+  }
 
+  // @ts-ignore
   const isPasswordValid = await verifyPassword(body.password, user.password);
 
   if (!isPasswordValid) {

@@ -52,8 +52,11 @@ export const useUser = () => {
                 }
             })
                 .then((response) => {
+                    console.log("USER DATA:")
                     console.log(response.data.user)
                     setUser(response.data.user)
+                    // set in recoil atom
+                    
                     setLoading(false);
                 })
         }
@@ -92,7 +95,6 @@ export const useBlog = ({id} : { id:string }) => {
         loading,
         blog
     }
-
 }
 
 export const useBlogs = () => {
@@ -101,18 +103,18 @@ export const useBlogs = () => {
     const [blogs, setBlogs] = useRecoilState(blogsAtom);
 
     useEffect(()=>{
-        
-        axios.get(`${BACKEND_URL}/api/v1/blog/bulk`, {
-            headers: {
-                Authorization: "Bearer " + localStorage.getItem("token")
-            }
-        })
-            .then((response) => {
-                console.log(response.data.blogs)
-                setBlogs(response.data.blogs)
-                setLoading(false);
+        if(!blogs.length) {
+            axios.get(`${BACKEND_URL}/api/v1/blog/bulk`, {
+                headers: {
+                    Authorization: "Bearer " + localStorage.getItem("token")
+                }
             })
-
+                .then((response) => {
+                    console.log(response.data.blogs)
+                    setBlogs(response.data.blogs)
+                    setLoading(false);
+                })
+        }
     }, [blogs, setBlogs]);
 
     return {
