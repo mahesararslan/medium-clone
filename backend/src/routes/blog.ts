@@ -263,39 +263,53 @@ blogRouter.get('/:id', async (c) => {
 
   const postId = c.req.param('id');
   const userId = c.get('userId').toString();
-
   const blog = await prisma.post.findFirst({
     where: { id: postId },
     select: {
-      id: true,
-      title: true,
-      shortDescription: true,
-      content: true,
-      createdAt: true,
-      author: {
-        select: {
-          id: true,
-          name: true,
-          image: true
-        }
-      },
-      _count: {
-        select: {
-          likes: true,
-          comments: true
-        }
-      },
-      likes: {
-        where: {
-          userId: userId
+        id: true,
+        title: true,
+        shortDescription: true,
+        content: true,
+        createdAt: true,
+        author: {
+            select: {
+                id: true,
+                name: true,
+                image: true
+            }
         },
-        select: {
-          id: true
+        _count: {
+            select: {
+                likes: true,
+                comments: true
+            }
+        },
+        likes: {
+            where: {
+                userId: userId
+            },
+            select: {
+                id: true
+            }
+        },
+        comments: {
+            select: {
+                content: true,
+                createdAt: true,
+                author: {
+                    select: {
+                        id: true,
+                        name: true,
+                        image: true
+                    }
+                }
+            }
         }
-      }
     }
-  });
+});
 
+
+  // @ts-ignore
   const liked = blog.likes.length > 0;
 
   return c.json({
@@ -307,6 +321,56 @@ blogRouter.get('/:id', async (c) => {
 });
 
 
+
+// post a comment
+blogRouter.post('/comment', async (c) => {
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env.DATABASE_URL,
+  }).$extends(withAccelerate());
+
+  const body = await c.req.json();
+  const userId = c.get('userId')
+  console.log("USER:",userId);
+  console.log(body);
+
+  const user = await prisma.user.findFirst({
+    where:{
+      id: userId
+    }
+  })
+
+  console.log(user);
+
+  const comment = await prisma.comment.create({
+    data: {
+      content: body.content,
+      postId: body.blogId,
+      authorId: userId
+    }
+  });
+
+  console.log("COMMENT:",comment);
+
+  // add a notification
+  await prisma.notification.create({
+    data: { // @ts-ignore
+      authorId: body.authorId || "",
+      postId: body.blogId,
+      userId: userId,
+      userName: user?.name || "",
+      userImage: user?.image || "",
+      message: "Commented on your Post.",
+    }
+  })
+
+  console.log("NOTIFICATION ADDED");
+  c.status(200);
+  return c.json({
+    comment,
+    msg: 'commented successfully'
+  });
+  
+});
 
   
 blogRouter.onError((err, c) => {

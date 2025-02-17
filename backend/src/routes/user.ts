@@ -189,6 +189,76 @@ const updateInput = z.object({
   name: z.string().optional()
 })
 
+// get notifications
+userRouter.get("/notifications", AuthMiddleware, async (c) => {
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env.DATABASE_URL,
+  }).$extends(withAccelerate());
+
+  // @ts-ignore
+  const id = c.get('userId').toString();
+
+  const notifications = await prisma.notification.findMany({
+    where: {
+      userId: id
+    }
+  });
+
+  c.status(200);
+  return c.json({
+    notifications
+  })
+});
+
+// mark notification as read
+userRouter.put("/notification/mark-as-read", AuthMiddleware, async (c) => {
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env.DATABASE_URL,
+  }).$extends(withAccelerate());
+
+  // @ts-ignore
+  const id = c.get('userId').toString();
+  const { notificationId } = await c.req.json();
+
+  const notification = await prisma.notification.update({
+    data: {
+      isRead: true
+    },
+    where: {
+      id: notificationId
+    }
+  });
+
+  c.status(200);
+  return c.json({
+    notification
+  })
+});
+
+// mark all notifications as read
+userRouter.put("/notification/mark-all-as-read", AuthMiddleware, async (c) => {
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env.DATABASE_URL,
+  }).$extends(withAccelerate());
+
+  // @ts-ignore
+  const id = c.get('userId').toString();
+
+  const notifications = await prisma.notification.updateMany({
+    data: {
+      isRead: true
+    },
+    where: {
+      authorId: id
+    }
+  });
+
+  c.status(200);
+  return c.json({
+    notifications
+  })
+});
+
 userRouter.put("/update-user", AuthMiddleware, async (c) => {
   const prisma = new PrismaClient({
     datasourceUrl: c.env.DATABASE_URL,

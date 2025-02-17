@@ -1,7 +1,6 @@
 import { Dispatch, SetStateAction } from 'react';
 import RichTextEditor, { BaseKit, Bold, Italic, Underline, BulletList, OrderedList, Image, TextAlign, FontSize } from 'reactjs-tiptap-editor';
 import parse from 'html-react-parser';
-
 // Import CSS
 import 'reactjs-tiptap-editor/style.css';
 
@@ -52,6 +51,7 @@ const extensions = [
   TextAlign.configure({
     types: ['paragraph', 'heading'], // Enable for paragraph and heading nodes
   }),
+
   // Add more extensions as needed
 ];
 
@@ -64,7 +64,7 @@ const TextEditor = ({ content, setContent }:
   };
 
   return (
-    <div className='mt-5'>
+    <div className='mt-5 text-black'>
     <RichTextEditor
       output='html'
       content={content}

@@ -8,14 +8,105 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../components/ui/dropdown-menu"
-import { Avatar, AvatarImage } from "../components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar"
 import { SearchIcon, BellIcon, PenSquareIcon } from 'lucide-react'
 import { useUser } from '../hooks'
+import NotificationSidebar from './NotificationSidebar'
+import axios from 'axios'
+import { BACKEND_URL } from '../config'
+
+
+
+// Mock notifications data
+const mockNotifications = [
+  {
+    id: "1",
+    userId: "user1",
+    userName: "John Doe",
+    userImage: "/placeholder.svg?height=40&width=40",
+    authorId: "author1",
+    postId: "post1",
+    message: 'liked your story "How to build a successful blog"',
+    isRead: false,
+    createdAt: new Date(Date.now() - 1000 * 60 * 5), // 5 minutes ago
+  },
+  {
+    id: "2",
+    userId: "user2",
+    userName: "Jane Smith",
+    userImage: "/placeholder.svg?height=40&width=40",
+    authorId: "author1",
+    postId: "post2",
+    message: 'commented on your story "10 tips for better writing"',
+    isRead: true,
+    createdAt: new Date(Date.now() - 1000 * 60 * 60), // 1 hour ago
+  },
+  // Add more mock notifications as needed
+]
 
 export default function Navbar() { // @ts-ignore
     const {loading, user} = useUser();
   const [showSearch, setShowSearch] = useState(false)
   const navigate = useNavigate()
+  const [showNotifications, setShowNotifications] = useState(false)
+  const [notifications, setNotifications] = useState([])
+  const [hasUnreadNotifications, setHasUnreadNotifications] = useState(false)
+  // const hasUnreadNotifications = notifications.some((notification) => !notification.isRead)
+
+  useEffect(() => {
+    
+    async function fetchNotifications() {
+      const res = await axios.get(`${BACKEND_URL}/api/v1/user/notifications`, {
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("token"),
+        },
+      });
+
+      console.log(res.data.notifications)
+      setNotifications(res.data.notifications); // @ts-ignore
+      const hasUnread = res.data.notifications.some((notification) => !notification.isRead)
+      setHasUnreadNotifications(hasUnread)
+    }
+
+    fetchNotifications();
+    
+  }, [])
+
+  const handleMarkAsRead = (id: string) => {
+    // backend call to mark notification as read
+    axios.put(
+      `${BACKEND_URL}/api/v1/user/notification/mark-as-read`, 
+      { notificationId: id },  // Only the request body
+      {
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("token"), // Move this out
+        },
+      }
+    )
+
+    setNotifications( // @ts-ignore
+      notifications.map((notification) => (notification.id === id ? { ...notification, isRead: true } : notification)),
+    )
+  }
+
+  const handleMarkAllAsRead = () => {
+
+    // backend call to mark all notifications as read
+    axios.put(`${BACKEND_URL}/api/v1/user/notification/mark-all-as-read`, {},
+      {
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("token"), // Move this out
+        },
+      }
+    )
+
+    setNotifications( // @ts-ignore
+      notifications.map((notification) => ({ // @ts-ignore
+        ...notification, // @ts-ignore
+        isRead: true,
+      })),
+    )
+  }
 
   useEffect(() => {
     if (loading) return
@@ -69,10 +160,13 @@ export default function Navbar() { // @ts-ignore
             </Link>
 
             {/* Notifications */}
-            <Button variant="ghost" size="icon" className="relative">
-              <BellIcon className="h-5 w-5" />
-              <span className="absolute top-0 right-0 h-2 w-2 bg-green-500 rounded-full" />
-            </Button>
+            <Button variant="ghost" size="icon" className="relative" onClick={() => setShowNotifications(true)}>
+                <BellIcon className="h-5 w-5" />
+                {hasUnreadNotifications && (
+                  <span className="absolute top-0 right-0 h-2 w-2 bg-green-500 rounded-full" />
+                )}
+              </Button>
+
 
             {/* Profile */}
             <DropdownMenu>
@@ -81,6 +175,10 @@ export default function Navbar() { // @ts-ignore
       <Avatar className="h-8 w-8 cursor-pointer">
         {/* @ts-ignore */}
         <AvatarImage src={user?.image || ""} alt={user?.name || ""} />
+          <AvatarFallback className="bg-gray-200 text-gray-700">
+                  {/* @ts-ignore */}
+                  {user?.name[0].toUpperCase() || "A"}
+          </AvatarFallback>
       </Avatar>
     </Button>
   </DropdownMenuTrigger>
@@ -124,6 +222,15 @@ export default function Navbar() { // @ts-ignore
           </div>
         )}
       </div>
+
+      {/* Notification Sidebar */}
+      <NotificationSidebar
+        isOpen={showNotifications}
+        onClose={() => setShowNotifications(false)}
+        notifications={notifications}
+        onMarkAsRead={handleMarkAsRead}
+        onMarkAllAsRead={handleMarkAllAsRead}
+      />
     </nav>
   )
 }

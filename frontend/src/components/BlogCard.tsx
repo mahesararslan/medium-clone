@@ -94,13 +94,15 @@ export function BlogCard({ blog }: BlogProps) {
           <div className="flex-1 space-y-4">
             {/* Author Info */}
             <div className="flex items-center gap-3 mb-3">
+            <Link to={`/account/${blog.author.id}`} >
               <Avatarr className="h-8 w-8">
-                <Link to={"/profile"} ><AvatarImage src={blog.author.image} alt={blog.author.name} /></Link>
-                <Link to={"/profile"} ><AvatarFallback className="bg-gray-200 text-gray-700">
+                <AvatarImage src={blog.author.image} alt={blog.author.name} />
+                <AvatarFallback className="bg-gray-200 text-gray-700">
                   {blog.author.name[0].toUpperCase()}
-                </AvatarFallback></Link>
+                </AvatarFallback>
               </Avatarr>
-              <Link to={"/profile"} > <span className="font-medium hover:underline">{blog.author.name}</span></Link>
+              </Link>
+              <Link to={`/account/${blog.author.id}`} > <span className="font-medium hover:underline">{blog.author.name}</span></Link>
               <span className="text-gray-500">·</span>
               <time className="text-gray-500">
                 {new Date(blog.createdAt).toLocaleString('default', { month: 'short', day: 'numeric' })}

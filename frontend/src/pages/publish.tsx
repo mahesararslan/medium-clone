@@ -3,16 +3,7 @@ import { BACKEND_URL } from "../config";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import TextEditor from "../components/TextEditor";
-import parse from "html-react-parser";
 import "../App.css";
-
-const Details = ({ description }: { description:any }) => {
-  return (
-    <>
-      <div className="ProseMirror">{parse(description)}</div>
-    </>
-  );
-};
 
 export const Publish = () => {
     
