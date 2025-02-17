@@ -1,11 +1,12 @@
 import { motion } from "framer-motion"
-import { CalendarDays, BookOpen } from "lucide-react"
+import { CalendarDays, BookOpen, Clock, ThumbsUp } from "lucide-react"
 import { Card, CardContent } from "../components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar"
 import { useEffect, useState } from "react"
 import axios from "axios"
 import { BACKEND_URL } from "../config"
 import { useParams } from "react-router-dom"
+import ProfileSkeleton from "../components/ProfileSkeleton"
 
 interface User {
   id: string;
@@ -23,6 +24,7 @@ interface Blog {
   shortDescription: string;
   content: string;
   createdAt: string;
+  image?: string;
   _count: {
     likes: number;
     comments: number;
@@ -65,6 +67,26 @@ export function AccountPage() {
     fetchBlogs();
   },[])
 
+  useEffect(() => {
+    function extractFirstImageUrl(htmlString: string) {
+        // Create a temporary DOM element
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = htmlString;
+      
+        // Find the first image tag
+        const imgTag = tempDiv.querySelector('img');
+      
+        // Return the src attribute of the image
+        return imgTag ? imgTag.src : null;
+      }
+      
+      // extract first image url from the blog content of each blog
+      blogs.forEach(blog => {
+        const firstImageUrl = extractFirstImageUrl(blog.content);
+        blog.image = firstImageUrl || "placeholder.svg";
+      })
+      
+}, [blogs])
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -88,7 +110,7 @@ export function AccountPage() {
   }
 
   if(loading) {
-    return <div>Loading...</div>
+      return <ProfileSkeleton />
   }
 
   return (
@@ -132,16 +154,34 @@ export function AccountPage() {
         <div className="space-y-6">
           {blogs.map((blog) => (
             <motion.div key={blog.id} variants={itemVariants}>
-              <Card className="hover:bg-gray-50 transition-colors">
+              <Card className="bg-gray-100 hover:bg-gray-200 transition-colors overflow-hidden">
                 <CardContent className="p-6">
-                  <h3 className="text-xl font-semibold mb-2">{blog.title}</h3>
-                  <p className="text-gray-600 mb-4">{blog.shortDescription}</p>
-                  <div className="flex items-center gap-4 text-sm text-gray-500">
-                    <span>{new Intl.DateTimeFormat("en-US", { year: "numeric", month: "long", day: "numeric" }).format(new Date(user.createdAt))}</span>
-                    <span>·</span>
-                    <span>{blog.readTime} minutes read</span>
-                    <span>·</span>
-                    <span>{blog._count.likes} likes</span>
+                  <div className="flex flex-col md:flex-row gap-6">
+                    <div className="flex-1">
+                      <h3 className="text-xl font-semibold mb-2">{blog.title}</h3>
+                      <p className="text-gray-600 mb-4">{blog.shortDescription}</p>
+                      <div className="flex items-center gap-4 text-sm text-gray-500">
+                        <span className="flex items-center gap-1">
+                          <CalendarDays className="w-4 h-4" />
+                          {new Intl.DateTimeFormat("en-US", { year: "numeric", month: "long", day: "numeric" }).format(new Date(user.createdAt))}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <Clock className="w-4 h-4" />
+                          {blog.readTime}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <ThumbsUp className="w-4 h-4" />
+                          {blog._count.likes} likes
+                        </span>
+                      </div>
+                    </div>
+                    <div className="md:w-1/3">
+                      <img
+                        src={blog.image || "/placeholder.svg"}
+                        alt={blog.title}
+                        className="w-full h-48 object-cover rounded-md"
+                      />
+                    </div>
                   </div>
                 </CardContent>
               </Card>
