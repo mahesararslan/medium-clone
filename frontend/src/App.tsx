@@ -13,6 +13,7 @@ import LandingPage from "./pages/LandingPage"
 import AboutUs from "./pages/AboutUs"
 import PrivacyPolicy from "./pages/PrivatePolicy"
 import ProtectedRoutes from "./utils/ProtectedRoutes"
+import { AccountPage } from "./pages/AccountPage"
 
 function App() {
 
@@ -33,6 +34,7 @@ function App() {
                 <Route path="/search" element={<SearchBlogs />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/my-blogs" element={<MyBlogs />} />
+                <Route path="/account/:id" element={<AccountPage />} />
                 <Route path="/edit-profile" element={<EditProfile />} />
               </Route>
           </Routes>

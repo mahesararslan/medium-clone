@@ -184,6 +184,26 @@ userRouter.get("/get-user", AuthMiddleware, async (c) => {
 
 });
 
+userRouter.get("/get-user/:id", AuthMiddleware, async (c) => {
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env.DATABASE_URL,
+  }).$extends(withAccelerate());
+
+  // @ts-ignore
+  const id = c.req.param('id');
+
+  const user = await prisma.user.findUnique({
+    where: {
+      id: id
+    }
+  });
+
+  return c.json({
+    user
+  })
+
+});
+
 const updateInput = z.object({
   password: z.string().min(6).optional(),
   name: z.string().optional()

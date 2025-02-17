@@ -247,7 +247,69 @@ blogRouter.get("/get-blogs", async (c) => {
   const blogs = await prisma.post.findMany({
     where: {
       authorId: id
+    }, // select count of likes and comments
+    select: {
+      id: true,
+      title: true,
+      shortDescription: true,
+      content: true,
+      createdAt: true,
+      _count: {
+        select: {
+          likes: true,
+          comments: true
+        }
+      }
     }
+
+  });
+
+  // minute read value calculation
+  blogs.forEach(blog => {
+    const words = blog.content.split(' ').length; // @ts-ignore
+    blog.readTime = Math.ceil(words / 200);
+  });
+
+  return c.json({
+    blogs
+  })
+
+});
+
+
+
+blogRouter.get("/get-blogs/:id", async (c) => {
+  const prisma = new PrismaClient({
+    datasourceUrl: c.env.DATABASE_URL,
+  }).$extends(withAccelerate());
+
+  // @ts-ignore
+  const id = c.req.param('id');
+
+  const blogs = await prisma.post.findMany({
+    where: {
+      authorId: id
+    }, // select count of likes and comments
+    select: {
+      id: true,
+      title: true,
+      shortDescription: true,
+      content: true,
+      createdAt: true,
+      _count: {
+        select: {
+          likes: true,
+          comments: true
+        }
+      }
+    }
+
+  });
+
+  // minute read value calculation
+  blogs.forEach(blog => {
+    const words = blog.content.split(' ').length; // @ts-ignore
+    blog.readTime = Math.ceil(words / 200);
   });
 
   return c.json({

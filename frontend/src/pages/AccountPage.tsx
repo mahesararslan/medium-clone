@@ -1,11 +1,11 @@
 import { motion } from "framer-motion"
 import { CalendarDays, BookOpen } from "lucide-react"
-import { Button } from "../components/ui/button"
 import { Card, CardContent } from "../components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar"
 import { useEffect, useState } from "react"
 import axios from "axios"
 import { BACKEND_URL } from "../config"
+import { useParams } from "react-router-dom"
 
 interface User {
   id: string;
@@ -31,15 +31,16 @@ interface Blog {
 }
 
 
-export function Profile() {
+export function AccountPage() {
 
+  const { id } = useParams<{ id: string }>();
   const [user, setUser] = useState<User>({} as User);
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchUser() {
-      const res = await axios.get(`${BACKEND_URL}/api/v1/user/get-user`,{
+      const res = await axios.get(`${BACKEND_URL}/api/v1/user/get-user/${id}`,{
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`
         }
@@ -53,7 +54,7 @@ export function Profile() {
 
   useEffect(() => {
     async function fetchBlogs() {
-      const res = await axios.get(`${BACKEND_URL}/api/v1/blog/get-blogs`,{
+      const res = await axios.get(`${BACKEND_URL}/api/v1/blog/get-blogs/${id}`,{
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`
         }
