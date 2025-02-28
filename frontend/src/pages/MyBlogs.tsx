@@ -7,7 +7,7 @@ import { useMyblogs, useUser } from "../hooks";
 
 export const MyBlogs = () => {
     const {user} : { loading: any, user: any} = useUser();
-    const {loading, blogs} : { loading: any, blogs: any} = useMyblogs();
+    const {loading, blogs} = useMyblogs();
 
 
     if(loading) {
@@ -34,7 +34,8 @@ export const MyBlogs = () => {
           <div className="flex justify-center">
             <div>
                 {blogs.map((blog: any) => (
-                <BlogCard
+                <BlogCard // @ts-ignore
+                key={blog.id} // @ts-ignore
                 id={blog.id} // Ensure each blog has a unique identifier
                 authorName={user.name || "Anonymous"}
                 title={blog.title}

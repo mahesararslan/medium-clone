@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { CalendarDays, Clock, HeartIcon, MessageCircleIcon, ThumbsUp } from 'lucide-react'
+import { CalendarDays, Clock, HeartIcon, MessageCircleIcon } from 'lucide-react'
 import { Button } from '../components/ui/button'
 import { Avatar as Avatarr, AvatarImage, AvatarFallback } from '../components/ui/avatar'
 import { Skeleton } from "../components/ui/skeleton"

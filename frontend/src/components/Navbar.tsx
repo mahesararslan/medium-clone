@@ -15,35 +15,6 @@ import NotificationSidebar from './NotificationSidebar'
 import axios from 'axios'
 import { BACKEND_URL } from '../config'
 
-
-
-// Mock notifications data
-const mockNotifications = [
-  {
-    id: "1",
-    userId: "user1",
-    userName: "John Doe",
-    userImage: "/placeholder.svg?height=40&width=40",
-    authorId: "author1",
-    postId: "post1",
-    message: 'liked your story "How to build a successful blog"',
-    isRead: false,
-    createdAt: new Date(Date.now() - 1000 * 60 * 5), // 5 minutes ago
-  },
-  {
-    id: "2",
-    userId: "user2",
-    userName: "Jane Smith",
-    userImage: "/placeholder.svg?height=40&width=40",
-    authorId: "author1",
-    postId: "post2",
-    message: 'commented on your story "10 tips for better writing"',
-    isRead: true,
-    createdAt: new Date(Date.now() - 1000 * 60 * 60), // 1 hour ago
-  },
-  // Add more mock notifications as needed
-]
-
 export default function Navbar() { // @ts-ignore
     const {loading, user} = useUser();
   const [showSearch, setShowSearch] = useState(false)

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { BACKEND_URL } from "../config"
 import { useRecoilState } from "recoil";
-import { blogAtom, blogsAtom, nameAtom, userAtom } from "../store/atoms";
+import { blogsAtom, nameAtom, userAtom } from "../store/atoms";
 
 export interface BlogType {
     content: string,
