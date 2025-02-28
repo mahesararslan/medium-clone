@@ -47,11 +47,21 @@ const mockNotifications = [
 export default function Navbar() { // @ts-ignore
     const {loading, user} = useUser();
   const [showSearch, setShowSearch] = useState(false)
+  const [searchQuery, setSearchQuery] = useState("")
   const navigate = useNavigate()
   const [showNotifications, setShowNotifications] = useState(false)
   const [notifications, setNotifications] = useState([])
   const [hasUnreadNotifications, setHasUnreadNotifications] = useState(false)
   // const hasUnreadNotifications = notifications.some((notification) => !notification.isRead)
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (searchQuery.trim()) {
+      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`)
+      setShowSearch(false)
+      setSearchQuery("")
+    }
+  }
 
   useEffect(() => {
     
@@ -125,26 +135,23 @@ export default function Navbar() { // @ts-ignore
         </Link>
 
           {/* Search - Desktop */}
-          <div className="hidden md:flex flex-1 max-w-xl">
+          <form onSubmit={handleSearch} className="hidden md:flex flex-1 max-w-xl">
             <div className="relative w-full">
               <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
-              <Input 
-                type="search" 
-                placeholder="Search Medium" 
-                className="w-full pl-10 bg-gray-50 border-none" 
+              <Input
+                type="search"
+                placeholder="Search Medium"
+                className="w-full pl-10 bg-gray-50 border-none"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
-          </div>
+          </form>
 
           {/* Actions */}
           <div className="flex items-center gap-4">
             {/* Search Button - Mobile */}
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="md:hidden"
-              onClick={() => setShowSearch(!showSearch)}
-            >
+            <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setShowSearch(!showSearch)}>
               <SearchIcon className="h-5 w-5" />
             </Button>
 
@@ -208,17 +215,19 @@ export default function Navbar() { // @ts-ignore
         {/* Mobile Search Popup */}
         {showSearch && (
           <div className="border-t md:hidden">
-            <div className="py-4">
+            <form onSubmit={handleSearch} className="py-4">
               <div className="relative">
                 <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
-                <Input 
-                  type="search" 
-                  placeholder="Search Medium" 
-                  className="w-full pl-10 bg-gray-50 border-none" 
+                <Input
+                  type="search"
+                  placeholder="Search Medium"
+                  className="w-full pl-10 bg-gray-50 border-none"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                   autoFocus
                 />
               </div>
-            </div>
+            </form>
           </div>
         )}
       </div>

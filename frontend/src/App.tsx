@@ -8,7 +8,7 @@ import { Profile } from "./pages/Profile"
 import { MyBlogs } from "./pages/MyBlogs"
 import { EditProfile } from "./pages/EditProfile"
 import { RecoilRoot } from "recoil"
-import { SearchBlogs } from "./pages/SearchBlogs"
+import { SearchPage } from "./pages/SearchBlogs"
 import LandingPage from "./pages/LandingPage"
 import AboutUs from "./pages/AboutUs"
 import PrivacyPolicy from "./pages/PrivatePolicy"
@@ -31,7 +31,7 @@ function App() {
                 <Route path="/blog/:id" element={<Blog />} />
                 <Route path="/blogs" element={<Blogs />} />
                 <Route path="/publish" element={<Publish />} />
-                <Route path="/search" element={<SearchBlogs />} />
+                <Route path="/search" element={<SearchPage />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/my-blogs" element={<MyBlogs />} />
                 <Route path="/account/:id" element={<AccountPage />} />

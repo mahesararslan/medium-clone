@@ -74,10 +74,9 @@ export const useUser = () => {
 }
 
 export const useBlog = (id: string) => {
-    const [blog, setBlog] = useRecoilState(blogAtom);
+    const [blog, setBlog] = useState();
 
     useEffect(() => {
-        if (!blog) {
             axios.get(`${BACKEND_URL}/api/v1/blog/${id}`, {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem("token")}`
@@ -89,7 +88,6 @@ export const useBlog = (id: string) => {
             .catch(error => {
                 console.error("Error fetching blog:", error);
             });
-        }
     }, [id, blog, setBlog]);
 
     console.log("SINGLE BLOG:", blog)

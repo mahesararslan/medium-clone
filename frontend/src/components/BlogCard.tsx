@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { HeartIcon, MessageCircleIcon } from 'lucide-react'
+import { CalendarDays, Clock, HeartIcon, MessageCircleIcon, ThumbsUp } from 'lucide-react'
 import { Button } from '../components/ui/button'
 import { Avatar as Avatarr, AvatarImage, AvatarFallback } from '../components/ui/avatar'
 import { Skeleton } from "../components/ui/skeleton"
@@ -34,16 +34,19 @@ export function BlogCard({ blog }: BlogProps) {
   const navigate = useNavigate();
 
   useEffect(() => {
+          if (!blog.content) return;
           function extractFirstImageUrl(htmlString: string) {
-              // Create a temporary DOM element
               const tempDiv = document.createElement('div');
               tempDiv.innerHTML = htmlString;
             
-              // Find the first image tag
-              const imgTag = tempDiv.querySelector('img');
+              const imgTags = tempDiv.querySelectorAll('img');
             
-              // Return the src attribute of the image
-              return imgTag ? imgTag.src : null;
+              for (let img of imgTags) {
+                if (img.src) {
+                  return img.src;
+                }
+              }
+              return null;
             }
             
             const firstImageUrl = extractFirstImageUrl(blog.content);
@@ -117,10 +120,20 @@ export function BlogCard({ blog }: BlogProps) {
               <p className="text-gray-600 line-clamp-3">
                 {blog.shortDescription}
               </p>
+              <div className="pt-2 flex items-center gap-4 text-sm text-gray-500">
+                        <span className="flex items-center gap-1">
+                          <CalendarDays className="w-4 h-4" />
+                          {new Intl.DateTimeFormat("en-US", { year: "numeric", month: "long", day: "numeric" }).format(new Date(blog.createdAt))}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <Clock className="w-4 h-4" />
+                          {Math.ceil(blog.content.split(" ").length/200)} min read
+                        </span>
+                      </div>
             </Link>
 
             {/* Engagement */}
-            <div className="flex items-center gap-4 pt-4">
+            <div className="flex items-center gap-4">
               <div className="flex items-center gap-1">
                 <Button
                   variant="ghost"
@@ -148,7 +161,7 @@ export function BlogCard({ blog }: BlogProps) {
           {/* Blog Image */}
           <div className="md:w-1/3 flex justify-center items-center">
             <img
-              src={image || "/placeholder.svg"}
+              src={image || "placeholder.svg"}
               alt={blog.title}
               className="w-full h-[1/3] object-cover rounded-lg"
             />

@@ -9,6 +9,8 @@ import { useBlog } from '../hooks'
 import axios from 'axios'
 import { BACKEND_URL } from '../config'
 import { set } from 'react-hook-form'
+import { FullBlog } from '../components/FullBlog'
+import { BlogSkeleton } from '../components/FullBlogSkeleton'
 
 export function Blog() {
   const { id } = useParams();
@@ -94,7 +96,7 @@ export function Blog() {
   };
 
   if (!blog) {
-    return <div>Loading...</div>;
+    return <BlogSkeleton />;
   }
 
   return (
