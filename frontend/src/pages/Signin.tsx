@@ -91,6 +91,8 @@ export function Signin() {
           <GoogleLogin
             width={380} 
             shape='pill'
+                        // @ts-ignore
+                        clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}
                         onSuccess={credentialResponse => {
                             if (credentialResponse.credential) {
                                 const decodedCredential = jwtDecode(credentialResponse.credential);
