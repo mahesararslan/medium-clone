@@ -9,6 +9,8 @@ This project is a clone of the popular Medium blogging platform, built using mod
   - Recoil for state management
   - Custom Hooks
   - Tailwind CSS
+  - Typescript
+  - Rich TextEditor
 
 - **Backend**
   - Hono for the runtime of Cloudflare Workers
