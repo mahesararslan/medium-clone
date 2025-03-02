@@ -106,7 +106,7 @@ export const useBlogs = () => {
             })
                 .then((response) => {
                     console.log(response.data.blogs)
-                    setBlogs(response.data.blogs)
+                    setBlogs(response.data.blogs.reverse());
                 })
         }
     }, [blogs, setBlogs]);

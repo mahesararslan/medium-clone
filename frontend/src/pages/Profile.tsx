@@ -165,7 +165,7 @@ export function Profile() {
                         </span>
                         <span className="flex items-center gap-1">
                           <Clock className="w-4 h-4" />
-                          {blog.readTime}
+                          {blog.readTime} mins read
                         </span>
                         <span className="flex items-center gap-1">
                           <ThumbsUp className="w-4 h-4" />
