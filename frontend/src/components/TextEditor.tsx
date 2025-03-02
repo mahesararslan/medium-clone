@@ -1,6 +1,5 @@
 import { Dispatch, SetStateAction } from 'react';
 import RichTextEditor, { BaseKit, Bold, Italic, Underline, BulletList, OrderedList, Image, TextAlign, FontSize } from 'reactjs-tiptap-editor';
-import parse from 'html-react-parser';
 // Import CSS
 import 'reactjs-tiptap-editor/style.css';
 
@@ -71,10 +70,6 @@ const TextEditor = ({ content, setContent }:
       onChangeContent={onChangeContent}
       extensions={extensions} 
     />
-    <div>
-      <h2>Content</h2>
-      <div>{parse(content)}</div>  
-    </div>
   </div>
   );
 };

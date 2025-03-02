@@ -220,7 +220,7 @@ userRouter.get("/notifications", AuthMiddleware, async (c) => {
 
   const notifications = await prisma.notification.findMany({
     where: {
-      userId: id
+      authorId: id
     }
   });
 
