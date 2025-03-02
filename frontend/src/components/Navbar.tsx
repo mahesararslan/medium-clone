@@ -44,7 +44,7 @@ export default function Navbar() { // @ts-ignore
       });
 
       console.log(res.data.notifications)
-      setNotifications(res.data.notifications); // @ts-ignore
+      setNotifications(res.data.notifications.reverse()); // @ts-ignore
       const hasUnread = res.data.notifications.some((notification) => !notification.isRead)
       setHasUnreadNotifications(hasUnread)
     }
