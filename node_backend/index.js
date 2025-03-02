@@ -28,6 +28,10 @@ const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 
+app.get('/', (req, res) => {
+  res.send('Hello World');
+});
+
 app.post('/upload', upload.single('file'), async (req, res) => {
   try {
     const { path: localFilePath } = req.file;
