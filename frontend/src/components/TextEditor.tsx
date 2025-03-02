@@ -7,9 +7,7 @@ const handleImageUpload = async (file: any) => {
   const formData = new FormData();
   formData.append('file', file);
   try {
-    console.log("VITE_NODE_BACKEND_URL");
-    console.log(import.meta.env.VITE_NODE_BACKEND_URL);
-    const response = await fetch(`${import.meta.env.VITE_NODE_BACKEND_URL}/upload`, { // Replace with your image upload API
+    const response = await fetch(`${import.meta.env.VITE_NODE_BACKEND_URL}/api/upload`, { // Replace with your image upload API
       method: 'POST',
       body: formData,
     });

@@ -32,7 +32,7 @@ app.get('/', (req, res) => {
   res.send('Hello World');
 });
 
-app.post('/upload', upload.single('file'), async (req, res) => {
+app.post('/api/upload', upload.single('file'), async (req, res) => {
   try {
     const { path: localFilePath } = req.file;
     console.log("Local file path: ", localFilePath);
