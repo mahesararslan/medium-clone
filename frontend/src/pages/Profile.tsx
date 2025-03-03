@@ -37,6 +37,7 @@ export function Profile() {
   const [user, setUser] = useState<User>({} as User);
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loading2, setLoading2] = useState(true);
 
   useEffect(() => {
     async function fetchUser() {
@@ -60,6 +61,7 @@ export function Profile() {
         }
       })
       setBlogs(res.data.blogs);
+      setLoading2(false);
     }
 
     fetchBlogs();
@@ -109,7 +111,7 @@ export function Profile() {
     },
   }
 
-  if(loading) {
+  if(loading || loading2) {
     return <ProfileSkeleton />
   }
 
