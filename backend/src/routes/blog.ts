@@ -403,15 +403,35 @@ blogRouter.post('/comment', async (c) => {
 
   console.log(user);
 
+  // const comment = await prisma.comment.create({
+  //   data: {
+  //     content: body.content,
+  //     postId: body.blogId,
+  //     authorId: userId
+  //   }
+  // });
+
   const comment = await prisma.comment.create({
     data: {
       content: body.content,
       postId: body.blogId,
-      authorId: userId
-    }
+      authorId: userId,
+    },
+    select: {
+      content: true,
+      createdAt: true,
+      author: {
+        select: {
+          id: true,
+          name: true,
+          image: true,
+        },
+      },
+    },
   });
 
-  console.log("COMMENT:",comment);
+  console.log("COMMENT:", comment);
+
 
   // add a notification
   await prisma.notification.create({

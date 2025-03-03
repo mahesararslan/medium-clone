@@ -38,7 +38,7 @@ export const Publish = () => {
                             }
                         })
                         navigate(`/blog/${res.data.id}`)
-                    }} type="submit" className="inline-flex items-center px-5 py-2.5 text-sm font-medium text-center text-white bg-blue-700 rounded-lg focus:ring-4 focus:ring-blue-200 hover:bg-blue-800">
+                    }} type="submit" className="inline-flex items-center px-5 py-2.5 text-sm font-medium text-center text-white bg-green-500 hover:bg-green-600 hover:scale-110 rounded-xl focus:ring-4 focus:ring-green-200 my-5">
                         Publish post
                     </button>
                 </div>

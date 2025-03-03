@@ -73,7 +73,7 @@ const upload = multer({ storage });
 
 // Test API
 app.get('/', (req, res) => {
-  res.send('Hello, Express Server is Running!');
+  res.send('Hello, Express Server is Running for Medium Backend!');
 });
 
 // Image Upload API

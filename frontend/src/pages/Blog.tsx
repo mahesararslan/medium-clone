@@ -14,27 +14,31 @@ import { BlogSkeleton } from '../components/FullBlogSkeleton'
 
 export function Blog() {
   const { id } = useParams();
-  const blog = useBlog(id);
+  const [blog, setBlog] = useState();
   const [likes, setLikes] = useState(blog?._count.likes);
   const [isLiked, setIsLiked] = useState(blog?.liked);
   const [comments, setComments] = useState(blog?.comments || []);
   const [newComment, setNewComment] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  
   useEffect(() => {
-    if(blog) {
-      setLikes(blog._count.likes);
-      setIsLiked(blog.liked);
-      setComments(blog.comments);
-    }
-  }, [blog]);
-
-  useEffect(() => {
-    if(blog) {
-      console.log("COMMENTS:", blog.comments);
-      setComments(blog.comments);
-    }
-  }, [comments]);
+    axios.get(`${BACKEND_URL}/api/v1/blog/${id}`, {
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`
+        }
+    })
+    .then(response => {
+        setBlog(response.data.blog);
+        const resComments = response.data.blog.comments.reverse();
+        setComments(resComments);
+        setLikes(blog._count.likes);
+        setIsLiked(blog.liked);
+    })
+    .catch(error => {
+        console.error("Error fetching blog:", error);
+    });
+}, [id]);
 
   const handleLike = async () => {
     if (isLiked) {
@@ -93,6 +97,7 @@ export function Blog() {
     setComments([res.data.comment, ...comments]);
     setNewComment('');
     setIsSubmitting(false);
+    // window.location.reload();
   };
 
   if (!blog) {
@@ -154,16 +159,16 @@ export function Blog() {
             />
             <Button 
               type="submit" 
-              className={`bg-green-500 hover:bg-green-600 hover:scale-110 rounded-lg text-white float-right ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
+              className={`bg-green-500 hover:bg-green-600 hover:scale-110 rounded-xl text-white float-right ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
               disabled={isSubmitting}
             >
               {isSubmitting ? 'Submitting...' : 'Post Comment'}
             </Button>
 
           </form>
-          <div className="space-y-6">
+          <div className="space-y-2">
             {comments.map((comment) => (
-              <div key={comment.id} className="bg-white p-4 rounded-lg shadow">
+              <div key={comment.id} className="bg-gray-100 p-4 rounded-xl shadow">
                 <div className="flex items-center gap-2 mb-2">
                   <Link to={`/account/${comment.author.id}`} >
                   <Avatar className="h-8 w-8 bg-green-400 text-white">
