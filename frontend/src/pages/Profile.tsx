@@ -67,16 +67,18 @@ export function Profile() {
 
   useEffect(() => {
     function extractFirstImageUrl(htmlString: string) {
-        // Create a temporary DOM element
-        const tempDiv = document.createElement('div');
-        tempDiv.innerHTML = htmlString;
-      
-        // Find the first image tag
-        const imgTag = tempDiv.querySelector('img');
-      
-        // Return the src attribute of the image
-        return imgTag ? imgTag.src : null;
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = htmlString;
+    
+      const imgTags = tempDiv.querySelectorAll('img');
+    
+      for (let img of imgTags) {
+        if (img.src) {
+          return img.src;
+        }
       }
+      return null;
+    }
       
       // extract first image url from the blog content of each blog
       blogs.forEach(blog => {
