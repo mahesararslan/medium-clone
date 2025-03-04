@@ -15,6 +15,7 @@ import { BlogSkeleton } from '../components/FullBlogSkeleton'
 export function Blog() {
   const { id } = useParams();
   const [blog, setBlog] = useState();
+  const [loading, setLoading] = useState(true);
   const [likes, setLikes] = useState(blog?._count.likes);
   const [isLiked, setIsLiked] = useState(blog?.liked);
   const [comments, setComments] = useState(blog?.comments || []);
@@ -29,11 +30,13 @@ export function Blog() {
         }
     })
     .then(response => {
+        console.log("BLOG RESPONSE: ",response.data);
         setBlog(response.data.blog);
         const resComments = response.data.blog.comments.reverse();
         setComments(resComments);
-        setLikes(blog._count.likes);
-        setIsLiked(blog.liked);
+        setLikes(response.data.blog?._count?.likes || 0);
+        setIsLiked(response.data.blog?.liked);
+        setLoading(false);
     })
     .catch(error => {
         console.error("Error fetching blog:", error);
@@ -42,7 +45,7 @@ export function Blog() {
 
   const handleLike = async () => {
     if (isLiked) {
-      setLikes(prev => prev - 1)
+      // setLikes(prev => prev - 1)
       setIsLiked(!isLiked)
         const res = await axios.post(`${BACKEND_URL}/api/v1/blog/like`,{    
             blogId: blog.id,
@@ -54,7 +57,7 @@ export function Blog() {
             }
         })
 
-        console.log(res.data);
+        console.log("LIKE RESPONSE: ",res.data);
 
         if(res.status !== 200) {
             setLikes(prev => prev + 1)
@@ -100,7 +103,7 @@ export function Blog() {
     // window.location.reload();
   };
 
-  if (!blog) {
+  if (loading) {
     return <BlogSkeleton />;
   }
 

@@ -6,6 +6,7 @@ import { useEffect, useState } from "react"
 import axios from "axios"
 import { BACKEND_URL } from "../config"
 import ProfileSkeleton from "../components/ProfileSkeleton"
+import { Link } from "react-router-dom"
 
 interface User {
   id: string;
@@ -156,6 +157,7 @@ export function Profile() {
         <div className="space-y-6">
           {blogs.map((blog) => (
             <motion.div key={blog.id} variants={itemVariants}>
+              <Link to={`/blog/${blog.id}`} key={blog.id} className="">
               <Card className="bg-gray-100 hover:bg-gray-200 transition-colors overflow-hidden">
                 <CardContent className="p-6">
                   <div className="flex flex-col md:flex-row gap-6">
@@ -187,6 +189,7 @@ export function Profile() {
                   </div>
                 </CardContent>
               </Card>
+              </Link> 
             </motion.div>
           ))}
         </div>
